@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dự đoán thể loại bài báo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      padding: 40px;
+      max-width: 700px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      background: #fff;
+    }
+
+    textarea {
+      height: 160px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #3498db;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .result {
+      margin-top: 30px;
+      padding: 16px;
+      background-color: #eaf6ff;
+      border-left: 6px solid #3498db;
+      border-radius: 6px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dự đoán thể loại bài báo</h1>
+
+  <label for="titleInput">Tiêu đề (Title):</label>
+  <input type="text" id="titleInput" placeholder="Nhập tiêu đề bài viết">
+
+  <label for="descInput">Mô tả (Description):</label>
+  <textarea id="descInput" placeholder="Nhập nội dung mô tả bài viết..."></textarea>
+
+  <button onclick="predict()">Dự đoán thể loại</button>
+
+  <div id="result" class="result" style="display: none;"></div>
+
+  <script>
+    async function predict() {
+      const title = document.getElementById("titleInput").value.trim();
+      const desc = document.getElementById("descInput").value.trim();
+
+      if (!title || !desc) {
+        alert("Vui lòng nhập cả Tiêu đề và Mô tả!");
+        return;
+      }
+
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description: desc })
+      });
+
+      if (!response.ok) {
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML = "❌ Có lỗi xảy ra khi gửi dữ liệu.";
+        return;
+      }
+
+      const data = await response.json();
+      document.getElementById("result").style.display = "block";
+      document.getElementById("result").innerHTML =
+        `🔍 <strong>Kết quả dự đoán:</strong> ${data.prediction}<br>
+        ✅ <strong>Độ tin cậy:</strong> ${data.confidence}<br>
+        🌐 <strong>Dịch sang EN:</strong> ${data.translated_input}`;
+    }
+  </script>
+
+
+</body>
+</html>
