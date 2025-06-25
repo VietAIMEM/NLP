@@ -2,3 +2,4 @@ flask
 tensorflow
 deep_translator
 flask-cors
+gdown
